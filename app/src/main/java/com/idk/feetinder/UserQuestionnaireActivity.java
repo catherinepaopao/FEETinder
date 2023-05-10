@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
@@ -70,12 +71,17 @@ public class UserQuestionnaireActivity extends AppCompatActivity implements View
 
         Button clickedButton = (Button) view;
         if(clickedButton.getId() == R.id.submit_btn) {
-            DatabaseReference currentQuestion = FirebaseDatabase.getInstance().getReference()
-                    .child("Users").child(userId).child("QuestionAnswers").child("Q" + (currentQuestionIndex+1));
-            currentQuestion.setValue(selectedAnswer);
-            currentQuestionIndex++;
-            loadNewQuestion();
+            if(selectedAnswer.equals("")){
+                Toast.makeText(UserQuestionnaireActivity.this, "Please select an answer!", Toast.LENGTH_SHORT).show();
+            } else {
+                DatabaseReference currentQuestion = FirebaseDatabase.getInstance().getReference()
+                        .child("Users").child(userId).child("QuestionAnswers").child("Q" + (currentQuestionIndex+1));
+                currentQuestion.setValue(selectedAnswer);
+                currentQuestionIndex++;
 
+                selectedAnswer = "";
+                loadNewQuestion();
+            }
         } else {
             selectedAnswer = clickedButton.getText().toString();
             clickedButton.setBackgroundColor(Color.MAGENTA);

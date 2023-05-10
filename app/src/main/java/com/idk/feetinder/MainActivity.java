@@ -58,6 +58,8 @@ public class MainActivity extends AppCompatActivity {
 
     BottomAppBar bottomAppBar;
 
+    DatabaseReference currentUserDb;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
 
         userId = auth.getCurrentUser().getUid();
-        DatabaseReference currentUserDb = FirebaseDatabase.getInstance().getReference();
+        currentUserDb = FirebaseDatabase.getInstance().getReference();
 
         usersToSwipe = new LinkedList<String>();
         getPotentialMatches();
@@ -126,11 +128,21 @@ public class MainActivity extends AppCompatActivity {
                     switch(motionEvent.getActionMasked()){
                         case MotionEvent.ACTION_UP:
                             if(card.getX() >= (xHomeCard +SWIPE_THRESHOLD)){ // swipe right
+                                if(!isFirstCard){
+                                    currentUserDb.child("Users").child(currentMatchId).child("Swipes")
+                                            .child("Like").child(userId).setValue(true); // store to database
+
+                                    checkMatch();
+                                }
                                 animationCard.setFloatValues(screenSize);
                                 //animationText.setFloatValues(screenSize);
                                 animationCard.start();
                                 //animationText.start();
                             } else if((card.getX() + SWIPE_THRESHOLD) <= xHomeCard){ // swipe left
+                                if(!isFirstCard){
+                                    currentUserDb.child("Users").child(currentMatchId).child("Swipes")
+                                            .child("Dislike").child(userId).setValue(true); // store to database
+                                }
                                 animationCard.setFloatValues(screenSize*-1);
                                 //animationText.setFloatValues(screenSize*-1);
                                 animationCard.start();
@@ -200,13 +212,32 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void checkMatch() {
+        DatabaseReference currentConnectionsDb = currentUserDb.child("Users").child(userId).child("Swipes").child("Like").child(currentMatchId);
+        currentConnectionsDb.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists()){ // both swiped
+                    currentUserDb.child("Users").child(userId).child("Matches").child(currentMatchId).setValue("true");
+                    currentUserDb.child("Users").child(currentMatchId).child("Matches").child(userId).setValue("true"); // add to both matches
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(MainActivity.this, "read failed: " + error.getCode(), Toast.LENGTH_SHORT);
+            }
+        });
+    }
+
     private void getPotentialMatches() {
         DatabaseReference potentialMatchDb = FirebaseDatabase.getInstance().getReference().child("Users");
         potentialMatchDb.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                if(snapshot.exists()){
-                    if(!snapshot.getKey().equals(userId)){
+                if(snapshot.exists() && !snapshot.child("Swipes").child("Like").hasChild(userId)
+                        && !snapshot.child("Swipes").child("Dislike").hasChild(userId)){ // don't repeat cards
+                    if(!snapshot.getKey().equals(userId)){ // not current user
                         usersToSwipe.add(snapshot.getKey());
                     }
                 }
@@ -249,6 +280,11 @@ public class MainActivity extends AppCompatActivity {
 
         while(currentMatchId.equals(userId) || currentMatchId.equals("Uid")){
             currentMatchId = usersToSwipe.poll();
+
+            if(currentMatchId == null){
+                cardText.setText("No matches at this time!");
+                return;
+            }
         }
 
         DatabaseReference currentUserDb = FirebaseDatabase.getInstance().getReference();
