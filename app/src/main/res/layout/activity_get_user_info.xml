@@ -5,6 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/md_theme_light_secondaryContainer"
+
     tools:context=".GetUserInfoActivity">
 
     <RadioGroup
@@ -14,7 +16,26 @@
         android:layout_marginStart="28dp"
         android:layout_marginTop="32dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/textView3">
+
+        <RadioButton
+            android:fontFamily="@font/quackey"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Other" />
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/quackey"
+            android:text="Female" />
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="1dp"
+            android:fontFamily="@font/quackey"
+            android:text="Male" />
 
     </RadioGroup>
 
@@ -23,10 +44,10 @@
         style="@style/Widget.Material3.Button.TonalButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="44dp"
         android:fontFamily="@font/quackey"
         android:text="continue"
         android:textAppearance="?android:textAppearanceMedium"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
@@ -34,65 +55,37 @@
         app:strokeColor="@color/md_theme_light_onSecondaryContainer"
         app:strokeWidth="3dp" />
 
-    <RadioButton
-        android:id="@+id/radioButton5"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
-        android:text="Other"
-        app:layout_constraintBottom_toTopOf="@+id/textView4"
-        app:layout_constraintStart_toStartOf="@+id/radioButton4"
-        app:layout_constraintTop_toBottomOf="@+id/radioButton4" />
-
-    <RadioButton
-        android:id="@+id/radioButton4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="44dp"
-        android:text="Female"
-        app:layout_constraintBottom_toTopOf="@+id/radioButton5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/radioButton6" />
-
-    <RadioButton
-        android:id="@+id/radioButton6"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="1dp"
-        android:layout_marginBottom="1dp"
-        android:text="Male"
-        app:layout_constraintBottom_toTopOf="@+id/radioButton4"
-        app:layout_constraintStart_toStartOf="@+id/radioButton4"
-        app:layout_constraintTop_toBottomOf="@+id/textView3" />
-
     <TextView
         android:id="@+id/textView3"
         android:layout_width="201dp"
         android:layout_height="0dp"
+        android:layout_marginStart="28dp"
         android:layout_marginTop="32dp"
-        android:layout_marginBottom="11dp"
+        android:fontFamily="@font/quackey"
         android:text="My Gender is"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        app:layout_constraintBottom_toTopOf="@+id/radioButton6"
-        app:layout_constraintStart_toStartOf="@+id/radioButton6"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- Krish -->
     <TextView
         android:id="@+id/textView4"
         android:layout_width="261dp"
         android:layout_height="0dp"
-        android:layout_marginStart="44dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginTop="36dp"
+        android:layout_marginStart="28dp"
+        android:fontFamily="@font/quackey"
         android:text="My Birthday is (MM/DD/YYYY)"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        app:layout_constraintBottom_toTopOf="@+id/enter_birthday"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/radioButton5" />
+        app:layout_constraintTop_toBottomOf="@+id/gender_select" />
 
     <EditText
         android:id="@+id/enter_birthday"
+        android:fontFamily="@font/quackey"
         android:layout_width="148dp"
         android:layout_height="49dp"
+        android:layout_marginTop="20dp"
         android:layout_marginStart="4dp"
         android:layout_marginBottom="400dp"
         android:ems="10"

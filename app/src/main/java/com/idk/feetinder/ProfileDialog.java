@@ -73,7 +73,7 @@ public class ProfileDialog extends Dialog {
                     String question = QuestionAnswer.question[i];
                     String questionAnswer = (String) snapshot.child("Q" + (i+1)).getValue();
 
-                    String textDisplay = display.getText() + question + ": " + questionAnswer + "\n";
+                    String textDisplay = display.getText() + question + " " + questionAnswer + "\n";
                     display.setText(textDisplay);
                 }
             }
