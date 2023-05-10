@@ -132,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
                                     currentUserDb.child("Users").child(currentMatchId).child("Swipes")
                                             .child("Like").child(userId).setValue(true); // store to database
 
-                                    checkMatch();
+                                    checkMatch(currentMatchId);
                                 }
                                 animationCard.setFloatValues(screenSize);
                                 //animationText.setFloatValues(screenSize);
@@ -212,14 +212,14 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void checkMatch() {
-        DatabaseReference currentConnectionsDb = currentUserDb.child("Users").child(userId).child("Swipes").child("Like").child(currentMatchId);
+    private void checkMatch(String matchId) {
+        DatabaseReference currentConnectionsDb = currentUserDb.child("Users").child(userId).child("Swipes").child("Like").child(matchId);
         currentConnectionsDb.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if(snapshot.exists()){ // both swiped
-                    currentUserDb.child("Users").child(userId).child("Matches").child(currentMatchId).setValue("true");
-                    currentUserDb.child("Users").child(currentMatchId).child("Matches").child(userId).setValue("true"); // add to both matches
+                    currentUserDb.child("Users").child(userId).child("Matches").child(matchId).setValue("true");
+                    currentUserDb.child("Users").child(matchId).child("Matches").child(userId).setValue("true"); // add to both matches
                 }
             }
 
