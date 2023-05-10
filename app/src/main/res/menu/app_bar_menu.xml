@@ -17,4 +17,13 @@
         android:icon="@drawable/logout"
         android:title="logout"
         app:showAsAction="always" />
+
+    <item
+        android:id="@+id/chat"
+        android:layout_width="46dp"
+        android:layout_height="56dp"
+        android:layout_gravity="right"
+        android:icon="@drawable/chat"
+        android:title="chat"
+        app:showAsAction="always" />
 </menu>
