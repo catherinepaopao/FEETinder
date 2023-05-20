@@ -52,46 +52,22 @@ public class LoginRegisterActivity extends AppCompatActivity {
         }
 
         if(user != null){ // check if already logged in
-            String uid = user.getUid();
-            db.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) { // check for unfinished sign up ADD BDAY LATER
-                    if(snapshot.exists()){
-                        if(!snapshot.child("Users").hasChild(uid) || !snapshot.child("Users").child(uid).hasChild("Gender")){
-                            Intent intent = new Intent(LoginRegisterActivity.this, GetUserInfoActivity.class);
-                            startActivity(intent);
-                            finish();
-                        } else if(!snapshot.child("Users").child(uid).hasChild("QuestionAnswers") ||
-                                snapshot.child("Users").child(uid).child("QuestionAnswers").getChildrenCount() < 5){
-                            Intent intent = new Intent(LoginRegisterActivity.this, UserQuestionnaireActivity.class);
-                            startActivity(intent);
-                            finish();
-                        } else if(!snapshot.child("Users").child(uid).hasChild("Name")){
-                            Intent intent = new Intent(LoginRegisterActivity.this, GetUserBioActivity.class);
-                            startActivity(intent);
-                            finish();
-                        }
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Toast.makeText(LoginRegisterActivity.this, "read failed: " + error.getCode(), Toast.LENGTH_SHORT);
-                }
-            });
-
             Intent intent = new Intent(LoginRegisterActivity.this, MainActivity.class);
             startActivity(intent);
             finish();
         }
 
         login.setOnClickListener(view -> {
+            Sounds.play(LoginRegisterActivity.this, R.raw.normal_button_tap);
+
             Intent intent = new Intent(LoginRegisterActivity.this, LoginActivity.class);
             startActivity(intent);
             finish();
         });
 
         register.setOnClickListener(view -> {
+            Sounds.play(LoginRegisterActivity.this, R.raw.normal_button_tap);
+
             Intent intent = new Intent(LoginRegisterActivity.this, RegistrationActivity.class);
             startActivity(intent);
             finish();

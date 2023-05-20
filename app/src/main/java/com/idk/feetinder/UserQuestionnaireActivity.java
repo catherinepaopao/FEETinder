@@ -38,7 +38,6 @@ public class UserQuestionnaireActivity extends AppCompatActivity implements View
         auth = FirebaseAuth.getInstance();
 
         userId = auth.getCurrentUser().getUid();
-        DatabaseReference currentUserDb = FirebaseDatabase.getInstance().getReference();
 
         totalQuestionsTextView = findViewById(R.id.profile_questions);
         questionTextView = findViewById(R.id.question);
@@ -72,8 +71,12 @@ public class UserQuestionnaireActivity extends AppCompatActivity implements View
         Button clickedButton = (Button) view;
         if(clickedButton.getId() == R.id.submit_btn) {
             if(selectedAnswer.equals("")){
+                Sounds.play(UserQuestionnaireActivity.this, R.raw.alert_error);
+
                 Toast.makeText(UserQuestionnaireActivity.this, "Please select an answer!", Toast.LENGTH_SHORT).show();
             } else {
+                Sounds.play(UserQuestionnaireActivity.this, R.raw.normal_button_tap);
+
                 DatabaseReference currentQuestion = FirebaseDatabase.getInstance().getReference()
                         .child("Users").child(userId).child("QuestionAnswers").child("Q" + (currentQuestionIndex+1));
                 currentQuestion.setValue(selectedAnswer);
@@ -83,6 +86,7 @@ public class UserQuestionnaireActivity extends AppCompatActivity implements View
                 loadNewQuestion();
             }
         } else {
+            Sounds.play(UserQuestionnaireActivity.this, R.raw.normal_button_tap);
             selectedAnswer = clickedButton.getText().toString();
             clickedButton.setBackgroundColor(Color.MAGENTA);
         }

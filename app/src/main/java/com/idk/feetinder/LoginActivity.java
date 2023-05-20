@@ -19,6 +19,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 public class LoginActivity extends AppCompatActivity {
@@ -39,39 +40,12 @@ public class LoginActivity extends AppCompatActivity {
         getSupportActionBar().hide();
 
         auth = FirebaseAuth.getInstance();
+        db = FirebaseDatabase.getInstance().getReference();
         firebaseAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 if(user != null){
-                    String uid = user.getUid();
-                    db.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) { // check for unfinished sign up ADD BDAY LATER
-                            if(snapshot.exists()){
-                                if(!snapshot.child("Users").hasChild(uid) || !snapshot.child("Users").child(uid).hasChild("Gender")){
-                                    Intent intent = new Intent(LoginActivity.this, GetUserInfoActivity.class);
-                                    startActivity(intent);
-                                    finish();
-                                } else if(!snapshot.child("Users").child(uid).hasChild("QuestionAnswers") ||
-                                        snapshot.child("Users").child(uid).child("QuestionAnswers").getChildrenCount() < 5){
-                                    Intent intent = new Intent(LoginActivity.this, UserQuestionnaireActivity.class);
-                                    startActivity(intent);
-                                    finish();
-                                } else if(!snapshot.child("Users").child(uid).hasChild("Name")){
-                                    Intent intent = new Intent(LoginActivity.this, GetUserBioActivity.class);
-                                    startActivity(intent);
-                                    finish();
-                                }
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-                            Toast.makeText(LoginActivity.this, "read failed: " + error.getCode(), Toast.LENGTH_SHORT);
-                        }
-                    });
-
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     startActivity(intent);
                     finish();
@@ -92,13 +66,18 @@ public class LoginActivity extends AppCompatActivity {
                 String userPass = password.getText().toString();
 
                 if(userEmail.isEmpty() || userPass.isEmpty()){
+                    Sounds.play(LoginActivity.this, R.raw.alert_error);
+
                     Toast.makeText(LoginActivity.this, "enter credentials", Toast.LENGTH_SHORT).show();
                 } else {
                     auth.signInWithEmailAndPassword(userEmail, userPass).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if(!task.isSuccessful()){
+                                Sounds.play(LoginActivity.this, R.raw.alert_error);
                                 Toast.makeText(LoginActivity.this, "bad credentials", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Sounds.play(LoginActivity.this, R.raw.login_button);
                             }
                         }
                     });
@@ -109,6 +88,8 @@ public class LoginActivity extends AppCompatActivity {
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Sounds.play(LoginActivity.this, R.raw.normal_button_tap);
+
                 Intent intent = new Intent(LoginActivity.this, LoginRegisterActivity.class);
                 startActivity(intent);
                 finish();

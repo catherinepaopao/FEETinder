@@ -60,13 +60,18 @@ public class RegistrationActivity extends AppCompatActivity {
                 String userPass = password.getText().toString();
 
                 if(userEmail.isEmpty() || userPass.isEmpty()){
+                    Sounds.play(RegistrationActivity.this, R.raw.alert_error);
+
                     Toast.makeText(RegistrationActivity.this, "enter stuff", Toast.LENGTH_SHORT).show();
                 } else {
                     auth.createUserWithEmailAndPassword(userEmail, userPass).addOnCompleteListener(RegistrationActivity.this, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if(!task.isSuccessful()){
+                                Sounds.play(RegistrationActivity.this, R.raw.alert_error);
                                 Toast.makeText(RegistrationActivity.this, "couldn't sign up", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Sounds.play(RegistrationActivity.this, R.raw.login_button);
                             }
                         }
                     });
@@ -77,6 +82,8 @@ public class RegistrationActivity extends AppCompatActivity {
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Sounds.play(RegistrationActivity.this, R.raw.normal_button_tap);
+
                 Intent intent = new Intent(RegistrationActivity.this, LoginRegisterActivity.class);
                 startActivity(intent);
                 finish();

@@ -10,14 +10,17 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.snackbar.Snackbar;
@@ -32,6 +35,8 @@ import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.UUID;
 
 public class GetUserBioActivity extends AppCompatActivity {
@@ -45,6 +50,7 @@ public class GetUserBioActivity extends AppCompatActivity {
     private FirebaseAuth auth;
     private FirebaseStorage storage;
     private StorageReference storageReference;
+    String userId;
 
     private boolean isFirstTime = true;
 
@@ -64,7 +70,7 @@ public class GetUserBioActivity extends AppCompatActivity {
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
 
-        String userId = auth.getCurrentUser().getUid();
+        userId = auth.getCurrentUser().getUid();
 
         DatabaseReference currentUserDb = FirebaseDatabase.getInstance().getReference();
 
@@ -73,7 +79,7 @@ public class GetUserBioActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 String existingName = (String) snapshot.child("Users").child(userId).child("Name").getValue();
                 String existingBio = (String) snapshot.child("Users").child(userId).child("Bio").getValue();
-                //System.out.println("BOBA uri: " + (String) snapshot.child("Users").child(userId).child("ProfilePicture").getValue());
+                String existingPfp = (String) snapshot.child("Users").child(userId).child("ProfilePicture").getValue();
 
                 if(existingName != null){
                     enterName.setText(existingName);
@@ -86,20 +92,9 @@ public class GetUserBioActivity extends AppCompatActivity {
                     enterBio.setText(existingBio);
                 }
 
-
-                /* Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-                intent.addCategory(Intent.CATEGORY_OPENABLE);
-                intent.setType("image/*");
-
-                if(intent.resolveActivity(getPackageManager()) != null){
-                    Uri existingPfp = Uri.parse((String) snapshot.child("Users").child(userId).child("ProfilePicture").getValue());
-                    if(existingPfp != null){
-                        profilePic.setImageURI(existingPfp);
-                        Toast.makeText(GetUserBioActivity.this, "retrieving pic", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    Toast.makeText(GetUserBioActivity.this, "uh oh", Toast.LENGTH_SHORT).show();
-                } */
+                if(existingPfp != null){
+                    Glide.with(getApplication()).load(existingPfp).into(profilePic);
+                }
             }
 
             @Override
@@ -111,6 +106,7 @@ public class GetUserBioActivity extends AppCompatActivity {
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Sounds.play(GetUserBioActivity.this, R.raw.normal_button_tap);
                 finish();
             }
         });
@@ -130,15 +126,8 @@ public class GetUserBioActivity extends AppCompatActivity {
                     DatabaseReference currentUserBio = FirebaseDatabase.getInstance().getReference()
                             .child("Users").child(userId).child("Bio");
 
-                    /* DatabaseReference currentUserPfp = FirebaseDatabase.getInstance().getReference()
-                            .child("Users").child(userId).child("ProfilePicture");
-
-                    currentUserPfp.setValue(imageUri.toString()); */
-
                     currentUserBio.setValue(bio);
-
-
-                    //System.out.println("BOBA real uri: " + imageUri.toString());
+                    Sounds.play(GetUserBioActivity.this, R.raw.continue_save_button);
 
                     if(!isFirstTime){
                         finish();
@@ -147,6 +136,8 @@ public class GetUserBioActivity extends AppCompatActivity {
                         startActivity(intent);
                         finish();
                     }
+                } else {
+                    Sounds.play(GetUserBioActivity.this, R.raw.alert_error);
                 }
             }
         });
@@ -154,35 +145,44 @@ public class GetUserBioActivity extends AppCompatActivity {
         profilePic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Sounds.play(GetUserBioActivity.this, R.raw.normal_button_tap);
                 selectPicture();
             }
         });
     }
 
-    private void uploadPicture() {
-        final ProgressDialog pd = new ProgressDialog(this);
-        pd.setTitle("Uploading Image...");
-        pd.show();
+    private void uploadPicture() throws IOException {
+        StorageReference path = storageReference.child("profilePics").child(userId);
+        Bitmap bitmap = null;
+        bitmap = MediaStore.Images.Media.getBitmap(getApplication().getContentResolver(), imageUri);
 
-        final String randKey = UUID.randomUUID().toString();
-        StorageReference ref = storageReference.child("images/" + randKey);
-        ref.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                pd.dismiss();
-                Snackbar.make(findViewById(android.R.id.content), "Image Uploaded", Snackbar.LENGTH_LONG).show();
-            }
-        }).addOnFailureListener(new OnFailureListener() {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 20, baos);
+        byte[] data = baos.toByteArray();
+
+        UploadTask uploadTask = path.putBytes(data);
+        uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                pd.dismiss();
-                Toast.makeText(GetUserBioActivity.this, "Image Upload Failed", Toast.LENGTH_LONG).show();
+                Snackbar.make(findViewById(android.R.id.content), "Upload Failed", Snackbar.LENGTH_LONG).show();
             }
-        }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+        });
+        uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
-            public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
-                double percent = (100.00*snapshot.getBytesTransferred() / snapshot.getTotalByteCount());
-                pd.setMessage((int) percent + "%");
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                path.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        Uri downloadUri = uri;
+
+                        DatabaseReference currentUserPfp = FirebaseDatabase.getInstance().getReference()
+                                .child("Users").child(userId).child("ProfilePicture");
+                        currentUserPfp.setValue(downloadUri.toString());
+                        Snackbar.make(findViewById(android.R.id.content), "Upload Successful", Snackbar.LENGTH_LONG).show();
+
+                        finish();
+                    }
+                });
             }
         });
     }
@@ -212,9 +212,8 @@ public class GetUserBioActivity extends AppCompatActivity {
     }
 
     private void selectPicture() {
-        Intent intent = new Intent();
+        Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
         activityResultLauncher.launch(intent);
     }
 
@@ -226,7 +225,11 @@ public class GetUserBioActivity extends AppCompatActivity {
                     if (result.getResultCode() == RESULT_OK && result.getData() != null && result.getData().getData() != null) {
                         imageUri = result.getData().getData();
                         profilePic.setImageURI(imageUri);
-                        uploadPicture();
+                        try {
+                            uploadPicture();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
                 }
             });

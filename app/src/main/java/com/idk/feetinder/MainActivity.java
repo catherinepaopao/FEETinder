@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView profile;
     private boolean homeTaken = false;
     private boolean isFirstCard = true;
+    private boolean firstCheck = true;
     private float xDown = 0;
     private float xHomeCard;
     private float xHomeText;
@@ -52,13 +53,13 @@ public class MainActivity extends AppCompatActivity {
 
     private FirebaseAuth auth;
 
-    Deque<String> usersToSwipe;
-    String currentMatchId;
-    String userId;
+    private Deque<String> usersToSwipe;
+    private String currentMatchId;
+    private String userId;
 
-    BottomAppBar bottomAppBar;
+    private BottomAppBar bottomAppBar;
 
-    DatabaseReference currentUserDb;
+    private DatabaseReference currentUserDb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,9 +87,22 @@ public class MainActivity extends AppCompatActivity {
         currentUserDb.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String name = (String) snapshot.child("Users").child(userId).child("Name").getValue();
-
-                greeting.setText(name + "'s Matches!");
+                if(snapshot.exists()){
+                    if(!snapshot.child("Users").hasChild(userId) || !snapshot.child("Users").child(userId).hasChild("Gender")
+                            || !snapshot.child("Users").child(userId).hasChild("QuestionAnswers") ||
+                            snapshot.child("Users").child(userId).child("QuestionAnswers").getChildrenCount() < 5
+                            || !snapshot.child("Users").child(userId).hasChild("Name")){
+                        if(firstCheck){
+                            firstCheck = false;
+                            Intent intent = new Intent(MainActivity.this, GetUserInfoActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
+                    } else {
+                        String name = (String) snapshot.child("Users").child(userId).child("Name").getValue();
+                        greeting.setText(name + "'s Matches!");
+                    }
+                }
             }
 
             @Override
@@ -100,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
         logOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Sounds.play(MainActivity.this, R.raw.logout_button);
                 auth.signOut();
                 Intent intent = new Intent(MainActivity.this, LoginRegisterActivity.class);
                 startActivity(intent);
@@ -110,6 +125,7 @@ public class MainActivity extends AppCompatActivity {
         profile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Sounds.play(MainActivity.this, R.raw.normal_button_tap);
                 Intent intent = new Intent(MainActivity.this, GetUserBioActivity.class);
                 startActivity(intent);
             }
@@ -128,6 +144,7 @@ public class MainActivity extends AppCompatActivity {
                     switch(motionEvent.getActionMasked()){
                         case MotionEvent.ACTION_UP:
                             if(card.getX() >= (xHomeCard +SWIPE_THRESHOLD)){ // swipe right
+                                Sounds.play(MainActivity.this, R.raw.swipe_right);
                                 if(!isFirstCard){
                                     currentUserDb.child("Users").child(currentMatchId).child("Swipes")
                                             .child("Like").child(userId).setValue(true); // store to database
@@ -139,6 +156,7 @@ public class MainActivity extends AppCompatActivity {
                                 animationCard.start();
                                 //animationText.start();
                             } else if((card.getX() + SWIPE_THRESHOLD) <= xHomeCard){ // swipe left
+                                Sounds.play(MainActivity.this, R.raw.swipe_left);
                                 if(!isFirstCard){
                                     currentUserDb.child("Users").child(currentMatchId).child("Swipes")
                                             .child("Dislike").child(userId).setValue(true); // store to database
@@ -204,6 +222,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick() {
                 if(currentMatchId != null){
+                    Sounds.play(MainActivity.this, R.raw.click_profile_card);
                     ProfileDialog profileDialog = new ProfileDialog(MainActivity.this, currentMatchId);
                     profileDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                     profileDialog.showDialog();

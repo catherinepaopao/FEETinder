@@ -13,6 +13,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -43,6 +44,12 @@ public class ProfileDialog extends Dialog {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 name.setText((String) snapshot.child("Users").child(userId).child("Name").getValue());
                 bio.setText((String) snapshot.child("Users").child(userId).child("Bio").getValue());
+                String pfp = (String) snapshot.child("Users").child(userId).child("ProfilePicture").getValue();
+
+                if(pfp != null){
+                    Glide.with(getContext()).load(pfp).into(profilePicture);
+                }
+                
                 questionAnswers.setText("Question Answers: \n");
                 formatQuestionAnswers(currentUserDb, questionAnswers);
             }
@@ -58,6 +65,7 @@ public class ProfileDialog extends Dialog {
         returnButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Sounds.play(getContext(), R.raw.normal_button_tap);
                 dismiss();
             }
         });
