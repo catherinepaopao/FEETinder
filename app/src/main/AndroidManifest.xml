@@ -13,6 +13,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FeeTinder">
         <activity
+            android:name=".MatchChat"
+            android:exported="false" />
+        <activity
             android:name=".UserQuestionnaireActivity"
             android:exported="false" />
         <activity

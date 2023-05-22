@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private View card;
     private View backCard;
     private TextView logOut;
+    private TextView chat;
     private TextView cardText;
 
     private TextView greeting;
@@ -73,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
         backCard = findViewById(R.id.card_behind);
         cardText = findViewById(R.id.card_text);
         logOut = bottomAppBar.findViewById(R.id.log_out);
+        chat = bottomAppBar.findViewById(R.id.chat);
         greeting = findViewById(R.id.greeting);
         profile = bottomAppBar.findViewById(R.id.home_button);
 
@@ -119,6 +121,15 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(MainActivity.this, LoginRegisterActivity.class);
                 startActivity(intent);
                 finish();
+            }
+        });
+
+        chat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Sounds.play(MainActivity.this, R.raw.logout_button);
+                Intent intent = new Intent(MainActivity.this, MatchChat.class);
+                startActivity(intent);
             }
         });
 

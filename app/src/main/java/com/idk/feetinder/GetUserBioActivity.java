@@ -164,7 +164,7 @@ public class GetUserBioActivity extends AppCompatActivity {
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                Snackbar.make(findViewById(android.R.id.content), "Upload Failed", Snackbar.LENGTH_LONG).show();
+                Toast.makeText(GetUserBioActivity.this, "Upload Failed", Toast.LENGTH_LONG).show();
             }
         });
         uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -178,9 +178,7 @@ public class GetUserBioActivity extends AppCompatActivity {
                         DatabaseReference currentUserPfp = FirebaseDatabase.getInstance().getReference()
                                 .child("Users").child(userId).child("ProfilePicture");
                         currentUserPfp.setValue(downloadUri.toString());
-                        Snackbar.make(findViewById(android.R.id.content), "Upload Successful", Snackbar.LENGTH_LONG).show();
-
-                        finish();
+                        Toast.makeText(GetUserBioActivity.this, "Upload Successful", Toast.LENGTH_LONG).show();
                     }
                 });
             }
