@@ -23,11 +23,13 @@ import com.google.firebase.database.ValueEventListener;
 
 public class ProfileDialog extends Dialog {
     String userId;
-    public ProfileDialog(@NonNull Context context, String uid) {
+    int compat;
+    public ProfileDialog(@NonNull Context context, String uid, int compatScore) {
         super(context);
         setContentView(R.layout.profile_dialog);
 
         userId = uid;
+        compat = compatScore;
     }
 
     public void showDialog(){
@@ -36,6 +38,9 @@ public class ProfileDialog extends Dialog {
         Button returnButton = findViewById(R.id.return_button);
         TextView questionAnswers = findViewById(R.id.question_responses);
         ImageView profilePicture = findViewById(R.id.profile_picture);
+        TextView compatDisplay = findViewById(R.id.compat_score);
+
+        compatDisplay.setText("Predicted\ncompatibility:\n" + compat*-1 + "/5");
 
         DatabaseReference currentUserDb = FirebaseDatabase.getInstance().getReference();
 
