@@ -13,10 +13,29 @@
         android:id="@+id/gender_select"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="28dp"
         android:layout_marginTop="32dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/textView3">
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/quackey"
+            android:text="Other" />
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/quackey"
+            android:text="Female" />
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="1dp"
+            android:fontFamily="@font/quackey"
+            android:text="Male" />
 
     </RadioGroup>
 
@@ -25,90 +44,103 @@
         style="@style/Widget.Material3.Button.TonalButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="200dp"
         android:fontFamily="@font/quackey"
         android:text="continue"
         android:textAppearance="?android:textAppearanceMedium"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/enter_birthday"
         app:strokeColor="@color/md_theme_light_onSecondaryContainer"
         app:strokeWidth="3dp" />
-
-    <RadioButton
-        android:id="@+id/radioButton5"
-        android:fontFamily="@font/quackey"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
-        android:text="Other"
-        app:layout_constraintBottom_toTopOf="@+id/textView4"
-        app:layout_constraintStart_toStartOf="@+id/radioButton4"
-        app:layout_constraintTop_toBottomOf="@+id/radioButton4" />
-
-    <RadioButton
-        android:id="@+id/radioButton4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/quackey"
-        android:layout_marginStart="44dp"
-        android:text="Female"
-        app:layout_constraintBottom_toTopOf="@+id/radioButton5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/radioButton6" />
-
-    <RadioButton
-        android:id="@+id/radioButton6"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="1dp"
-        android:fontFamily="@font/quackey"
-        android:layout_marginBottom="1dp"
-        android:text="Male"
-        app:layout_constraintBottom_toTopOf="@+id/radioButton4"
-        app:layout_constraintStart_toStartOf="@+id/radioButton4"
-        app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
     <TextView
         android:id="@+id/textView3"
         android:layout_width="201dp"
         android:layout_height="0dp"
         android:layout_marginTop="32dp"
-        android:fontFamily="@font/quackey"
-        android:layout_marginBottom="11dp"
-        android:text="My Gender is"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        app:layout_constraintBottom_toTopOf="@+id/radioButton6"
-        app:layout_constraintStart_toStartOf="@+id/radioButton6"
+        android:fontFamily="@font/aloevera"
+        android:gravity="center"
+        android:text="Gender"
+        android:textSize="40dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textView4"
-        android:layout_width="261dp"
-        android:fontFamily="@font/quackey"
-        android:layout_height="0dp"
-        android:layout_marginStart="44dp"
-        android:layout_marginBottom="16dp"
+        android:layout_width="340dp"
+        android:layout_height="86dp"
+        android:layout_marginTop="36dp"
+        android:fontFamily="@font/aloevera"
+        android:gravity="center"
         android:text="My Birthday is (MM/DD/YYYY)"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        app:layout_constraintBottom_toTopOf="@+id/enter_birthday"
+        android:textSize="40dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/radioButton5" />
+        app:layout_constraintTop_toBottomOf="@+id/gender_select" />
 
     <EditText
         android:id="@+id/enter_birthday"
-        android:fontFamily="@font/quackey"
         android:layout_width="148dp"
         android:layout_height="49dp"
         android:layout_marginStart="4dp"
-        android:layout_marginBottom="400dp"
+        android:layout_marginTop="20dp"
         android:ems="10"
+        android:gravity="center"
+        android:fontFamily="@font/quackey"
         android:hint="Enter Birthday"
         android:inputType="date"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/textView4"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView4" />
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:fontFamily="@font/aloevera"
+        android:text="What are you looking for?"
+        android:textSize="30dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/enter_birthday" />
+
+    <RadioGroup
+        android:id="@+id/relationship_choices"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="507dp" />
+
+    <RadioButton
+        android:id="@+id/radioButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/quackey"
+        android:text="Romantic relationships"
+        app:layout_constraintBottom_toTopOf="@+id/continueButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/radioButton2" />
+
+    <RadioButton
+        android:id="@+id/radioButton2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/quackey"
+        android:text="Platonic relationships"
+        app:layout_constraintBottom_toTopOf="@+id/continueButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView5"
+        app:layout_constraintVertical_bias="0.191" />
+
+</RadioGroup>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
