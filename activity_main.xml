@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Aadya -->
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <com.google.android.material.bottomappbar.BottomAppBar
+        android:id="@+id/bottomAppBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        style="@style/Widget.Material3.BottomAppBar"
+        app:backgroundTint="@color/md_theme_light_secondaryContainer"
+        app:menu="@menu/app_bar_menu"
+        />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="901dp"
+        tools:context=".MainActivity">
+
+        <View
+            android:id="@+id/card_behind"
+            android:layout_width="262dp"
+            android:layout_height="360dp"
+            android:background = "@drawable/rounded_corner"
+
+            android:backgroundTint="@color/md_theme_light_secondaryContainer"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.503"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.353" />
+
+        <View
+            android:id="@+id/card_box"
+            android:layout_width="262dp"
+            android:layout_height="360dp"
+            android:background = "@drawable/rounded_corner"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.503"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.353" />
+
+        <TextView
+            android:id="@+id/card_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#597860"
+            android:textSize="30sp"
+            android:fontFamily = "@font/quackey"
+            android:text="Swipe to begin!"
+            app:layout_constraintBottom_toBottomOf="@+id/card_box"
+            app:layout_constraintEnd_toEndOf="@+id/card_box"
+            app:layout_constraintHorizontal_bias="0.495"
+            app:layout_constraintStart_toStartOf="@+id/card_box"
+            app:layout_constraintTop_toTopOf="@+id/card_box" />
+
+
+        <TextView
+            android:id="@+id/greeting"
+            android:layout_width="345dp"
+            android:layout_height="140dp"
+            android:fontFamily="@font/quackey"
+            android:gravity="center"
+            android:text="---"
+            android:textSize="30sp"
+            app:layout_constraintBottom_toTopOf="@+id/card_box"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.483" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+
+
+
