@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -14,7 +15,6 @@ import java.util.List;
 
 public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder>{
     private List<ChatModelClass> userList;
-
     public Adapter(List<ChatModelClass>userList){
         this.userList=userList;
     }
@@ -34,6 +34,12 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder>{
         String line = userList.get(position).getDivider();
         holder.setData(resource, name, msg, time, line);
 
+        holder.imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
     }
 
     @Override

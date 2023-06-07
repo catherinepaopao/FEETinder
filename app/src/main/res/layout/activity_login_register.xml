@@ -11,40 +11,68 @@
     <Button
         android:id="@+id/login_button"
         style="@style/Widget.Material3.Button.TonalButton"
-        android:fontFamily="@font/quackey"
-        android:textAppearance="?android:textAppearanceMedium"
         android:layout_width="255dp"
-        android:layout_height="55dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="272dp"
+        android:fontFamily="@font/quackey"
         android:text="login"
+        android:textAppearance="?android:textAppearanceMedium"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        style="@style/Widget.Material3.Button.TonalButton"
-        android:fontFamily="@font/quackey"
-        android:textAppearance="?android:textAppearanceMedium"
         android:id="@+id/register_button"
+        style="@style/Widget.Material3.Button.TonalButton"
         android:layout_width="255dp"
-        android:layout_height="55dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/quackey"
         android:text="register"
+        android:textAppearance="?android:textAppearanceMedium"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/login_button"
-        app:layout_constraintVertical_bias="0.137" />
+        app:layout_constraintVertical_bias="0.157" />
 
     <ImageView
-        android:id="@+id/imageView2"
-        android:layout_width="352dp"
-        android:layout_height="288dp"
-        android:alpha="0.4"
+        android:id="@+id/imageView3"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="36dp"
+        android:layout_marginBottom="256dp"
+        android:alpha="0.7"
+        android:rotation="-138"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/register_button"
+        app:layout_constraintStart_toStartOf="@+id/register_button"
         app:srcCompat="@drawable/logo" />
+
+    <ImageView
+        android:id="@+id/imageView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="236dp"
+        android:layout_marginEnd="60dp"
+        android:alpha="0.7"
+        android:rotation="48"
+        app:layout_constraintEnd_toEndOf="@+id/login_button"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/logo" />
+
+    <TextView
+        android:id="@+id/txt_animation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_marginEnd="208dp"
+        android:fontFamily="@font/aloevera"
+        android:rotation="-91"
+        android:text="FEETinder"
+        android:textColor="@color/md_theme_light_onPrimaryContainer"
+        android:textSize="65dp"
+        app:layout_constraintBottom_toTopOf="@+id/login_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.814" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,6 +1,8 @@
 // Aadya
 package com.idk.feetinder;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
@@ -13,6 +15,14 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +33,8 @@ public class MatchChat extends AppCompatActivity {
     List<ChatModelClass> userList;
     Adapter adapter;
     Button back;
+    DatabaseReference db = FirebaseDatabase.getInstance().getReference();
+    String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,7 +56,50 @@ public class MatchChat extends AppCompatActivity {
 
     private void initData() {
         userList = new ArrayList<>();
-        userList.add(new ChatModelClass(R.drawable.defaultpfp, "Default", "0:00AM", "Default Text"));
+        userList.add(new ChatModelClass(R.drawable.defaultpfp, "placeholder", "", ""));
+        if(db == null){
+            System.out.println("booooo");
+            return;
+        }
+        DatabaseReference matchDb = db.child("Users").child(userId).child("Matches");
+        matchDb.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                if(snapshot.exists()){
+                    if(snapshot.getKey() != null){
+                        String matchId = snapshot.getKey();
+                        db.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                if(snapshot.exists()){
+                                    String matchName = (String) snapshot.child("Users").child(matchId).child("Name").getValue();
+                                    userList.add(new ChatModelClass(R.drawable.defaultpfp, matchName, "", ""));
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
+                            }
+                        });
+
+                    }
+                }
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+            }
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+            }
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
     }
 
     private void initRecyclerView() {

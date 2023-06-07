@@ -1,6 +1,7 @@
 // Catherine
 package com.idk.feetinder;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.view.View;
@@ -24,6 +25,7 @@ import com.google.firebase.database.ValueEventListener;
 public class ProfileDialog extends Dialog {
     String userId;
     int compat;
+    final Context context = getContext();
     public ProfileDialog(@NonNull Context context, String uid, int compatScore) {
         super(context);
         setContentView(R.layout.profile_dialog);
@@ -51,8 +53,10 @@ public class ProfileDialog extends Dialog {
                 bio.setText((String) snapshot.child("Users").child(userId).child("Bio").getValue());
                 String pfp = (String) snapshot.child("Users").child(userId).child("ProfilePicture").getValue();
 
-                if(pfp != null){
-                    Glide.with(getContext()).load(pfp).into(profilePicture);
+                if(isValidContextForGlide(context)){
+                    if(pfp != null){
+                        Glide.with(getContext()).load(pfp).into(profilePicture);
+                    }
                 }
                 
                 questionAnswers.setText("Question Answers: \n");
@@ -96,5 +100,18 @@ public class ProfileDialog extends Dialog {
                 Toast.makeText(getContext(), "read failed: " + error.getCode(), Toast.LENGTH_SHORT);
             }
         });
+    }
+
+    public static boolean isValidContextForGlide(final Context context) {
+        if (context == null) {
+            return false;
+        }
+        if (context instanceof Activity) {
+            final Activity activity = (Activity) context;
+            if (activity.isDestroyed() || activity.isFinishing()) {
+                return false;
+            }
+        }
+        return true;
     }
 }

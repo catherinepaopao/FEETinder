@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView logOut;
     private TextView chat;
     private TextView cardText;
+    private ProfileDialog profileDialog;
 
     private TextView greeting;
     private TextView profile;
@@ -58,8 +59,7 @@ public class MainActivity extends AppCompatActivity {
 
     private FirebaseAuth auth;
 
-    /* private PriorityQueue<String[]> usersToSwipe; */
-    private Deque<String[]> usersToSwipe;
+    private Deque<String> usersToSwipe;
     private String currentMatchId;
     private String[] currentMatchInfo;
     private String userId;
@@ -89,10 +89,7 @@ public class MainActivity extends AppCompatActivity {
         userId = auth.getCurrentUser().getUid();
         currentUserDb = FirebaseDatabase.getInstance().getReference();
 
-        /* if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            usersToSwipe = new PriorityQueue<>(Comparator.comparingInt(a -> Integer.parseInt(a[1])));
-        } */
-        usersToSwipe = new LinkedList<String[]>();
+        usersToSwipe = new LinkedList<String>();
         getPotentialMatches();
 
         currentUserDb.addValueEventListener(new ValueEventListener() {
@@ -243,13 +240,46 @@ public class MainActivity extends AppCompatActivity {
             public void onClick() {
                 if(currentMatchId != null){
                     Sounds.play(MainActivity.this, R.raw.click_profile_card);
-                    ProfileDialog profileDialog = new ProfileDialog(MainActivity.this, currentMatchId, Integer.parseInt(currentMatchInfo[1]));
-                    profileDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                    profileDialog.showDialog();
+                    if(profileDialog != null){
+                        profileDialog.showDialog();
+                    }
                 }
             }
         });
     }
+
+    /* private void openProfileDialog() {
+        DatabaseReference theDb = FirebaseDatabase.getInstance().getReference();
+        theDb.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String[] user1Answers = new String[5];
+                String[] user2Answers = new String[5];
+
+                if (snapshot.child("Users").child(userId).child("QuestionAnswers").getChildrenCount() == 5) {
+                    for (int i = 0; i < 5; i++) {
+                        user1Answers[i] = snapshot.child("Users").child(userId).child("QuestionAnswers").child("Q" + (i + 1)).getValue().toString();
+                    }
+                }
+
+                if (snapshot.child("Users").child(currentMatchId).child("QuestionAnswers").getChildrenCount() == 5) {
+                    for (int i = 0; i < 5; i++) {
+                        user2Answers[i] = snapshot.child("Users").child(currentMatchId).child("QuestionAnswers").child("Q" + (i + 1)).getValue().toString();
+                    }
+                }
+
+                int compatScore = -1*MatchingAlgorithm.calculateCompatibilityScores(user1Answers, user2Answers);
+
+                profileDialog = new ProfileDialog(MainActivity.this, currentMatchId, compatScore);
+                profileDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    } */
 
     private void checkMatch(String matchId) {
         DatabaseReference currentConnectionsDb = currentUserDb.child("Users").child(userId).child("Swipes").child("Like").child(matchId);
@@ -276,8 +306,10 @@ public class MainActivity extends AppCompatActivity {
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 if(snapshot.exists() && !snapshot.child("Swipes").child("Like").hasChild(userId)
                         && !snapshot.child("Swipes").child("Dislike").hasChild(userId)){ // don't repeat cards
-                    if(!snapshot.getKey().equals(userId)){ // not current user
-                        addUserToQueue(userId, snapshot.getKey());
+                    if(!snapshot.getKey().equals(userId) && !snapshot.getKey().equals("Uid")){ // not current user
+                        if(!usersToSwipe.contains(snapshot.getKey())){
+                            usersToSwipe.add(snapshot.getKey());
+                        }
                     }
                 }
             }
@@ -296,7 +328,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void addUserToQueue(String uid1, String uid2) {
+    /* private void addUserToQueue(String uid1, String uid2) {
         DatabaseReference theDb = FirebaseDatabase.getInstance().getReference();
         theDb.addValueEventListener(new ValueEventListener() {
             @Override
@@ -320,7 +352,10 @@ public class MainActivity extends AppCompatActivity {
 
                 String[] newEntry = {uid2,
                         String.valueOf((-1*compatScore))};
-                usersToSwipe.add(newEntry);
+
+                if(!usersToSwipe.contains(newEntry)){
+                    usersToSwipe.add(newEntry);
+                }
             }
 
             @Override
@@ -328,7 +363,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-    }
+    } */
 
     private static int getScreenWidth(Context context) {
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
@@ -340,30 +375,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getNextProfile(){ // display next user for swiping
-        currentMatchInfo = usersToSwipe.poll();
-
-        if(isFirstCard){
-            return;
-        }
-
-        if(currentMatchInfo == null){
-            currentMatchId = null;
+        if(usersToSwipe.isEmpty()){
             cardText.setText("No matches at this time!");
             return;
         }
 
-        currentMatchId = currentMatchInfo[0];
+        currentMatchId = usersToSwipe.poll();
 
-        while(currentMatchId.equals(userId) || currentMatchId.equals("Uid")){
-            currentMatchInfo = usersToSwipe.poll();
-
-            if(currentMatchInfo == null){
-                currentMatchId = null;
-                cardText.setText("No matches at this time!");
-                return;
-            }
-
-            currentMatchId = currentMatchInfo[0];
+        if(isFirstCard){
+            return;
         }
 
         DatabaseReference currentUserDb = FirebaseDatabase.getInstance().getReference();
@@ -373,6 +393,26 @@ public class MainActivity extends AppCompatActivity {
                 if(currentMatchId != null){
                     cardText.setText((String) snapshot.child("Users").child(currentMatchId).child("Name").getValue());
                 }
+
+                String[] user1Answers = new String[5];
+                String[] user2Answers = new String[5];
+
+                if (snapshot.child("Users").child(userId).child("QuestionAnswers").getChildrenCount() == 5) {
+                    for (int i = 0; i < 5; i++) {
+                        user1Answers[i] = snapshot.child("Users").child(userId).child("QuestionAnswers").child("Q" + (i + 1)).getValue().toString();
+                    }
+                }
+
+                if (snapshot.child("Users").child(currentMatchId).child("QuestionAnswers").getChildrenCount() == 5) {
+                    for (int i = 0; i < 5; i++) {
+                        user2Answers[i] = snapshot.child("Users").child(currentMatchId).child("QuestionAnswers").child("Q" + (i + 1)).getValue().toString();
+                    }
+                }
+
+                int compatScore = -1*MatchingAlgorithm.calculateCompatibilityScores(user1Answers, user2Answers);
+
+                profileDialog = new ProfileDialog(MainActivity.this, currentMatchId, compatScore);
+                profileDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             }
 
             @Override
