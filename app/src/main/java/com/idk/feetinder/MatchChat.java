@@ -68,6 +68,7 @@ public class MatchChat extends AppCompatActivity {
                 if(snapshot.exists()){
                     if(snapshot.getKey() != null){
                         String matchId = snapshot.getKey();
+                        userList.add(new ChatModelClass(R.drawable.defaultpfp, "Match id: " + matchId, "", ""));
                         db.addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
