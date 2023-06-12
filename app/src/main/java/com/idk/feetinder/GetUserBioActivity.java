@@ -7,6 +7,10 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import org.tensorflow.lite.DataType;
+import org.tensorflow.lite.TensorFlowLite;
+import org.tensorflow.lite.support.image.TensorImage;
+import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -34,6 +38,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.idk.feetinder.assets.Ftdetect;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -156,6 +161,8 @@ public class GetUserBioActivity extends AppCompatActivity {
         Bitmap bitmap = null;
         bitmap = MediaStore.Images.Media.getBitmap(getApplication().getContentResolver(), imageUri);
 
+
+
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 20, baos);
         byte[] data = baos.toByteArray();
@@ -167,6 +174,12 @@ public class GetUserBioActivity extends AppCompatActivity {
                 Toast.makeText(GetUserBioActivity.this, "Upload Failed", Toast.LENGTH_LONG).show();
             }
         });
+
+        Bitmap bitmap1 = MediaStore.Images.Media.getBitmap(getApplication().getContentResolver(), imageUri);
+
+        if(feetDetect(bitmap1) == false){
+            Toast.makeText(GetUserBioActivity.this, "Upload Failed", Toast.LENGTH_LONG).show();
+        }
         uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -183,6 +196,38 @@ public class GetUserBioActivity extends AppCompatActivity {
                 });
             }
         });
+    }
+    public boolean feetDetect(Bitmap bitmap){
+        try {
+            Ftdetect model = Ftdetect.newInstance(GetUserBioActivity.this);
+
+            // Creates inputs for reference.
+            bitmap = Bitmap.createScaledBitmap(bitmap, 256, 256, true);
+            TensorBuffer image = TensorBuffer.createFixedSize(new int[]{1, 256, 256, 3}, DataType.UINT8);
+            image.loadBuffer(TensorImage.fromBitmap(bitmap).getBuffer);
+
+            // Runs model inference and gets result.
+            Ftdetect.Outputs outputs = model.process(image);
+            TensorBuffer location = outputs.getLocationAsTensorBuffer();
+            TensorBuffer score = outputs.getScoreAsTensorBuffer();
+            float upper = getMax(score.getFloatArray());
+            // Releases model resources if no longer used.
+            model.close();
+            if (upper < 0.01){
+                return false;
+            }
+
+        } catch (IOException e) {
+            // TODO Handle the exception
+        }
+    }
+
+    public int getMax(float[] arr){
+        int max = 0;
+        for (int i = 0; i < arr.length; i++){
+            if (arr[i] > arr[max]){max = i;}
+        }
+        return max;
     }
 
     private boolean isValidNameBio(String name, String bio) {
@@ -205,7 +250,7 @@ public class GetUserBioActivity extends AppCompatActivity {
             Toast.makeText(GetUserBioActivity.this, "bio too long!", Toast.LENGTH_SHORT).show();
             return false;
         }
-        
+
         return true;
     }
 
